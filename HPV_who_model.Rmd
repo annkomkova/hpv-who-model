@@ -1,0 +1,64 @@
+```{r}
+install.packages("remotes")
+remotes::install_github("lshtm-vimc/prime")
+library(prime)
+```
+
+```{r}
+
+percents <- c(0, 0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.99)
+
+
+for ( i in 1:length(percents)){ 
+d<-RunCountry("RUS", year_vac=2023, agevac=12, cov=percents[i], vaceff_beforesexdebut =0.99,
+          analyseCosts=TRUE)
+}
+```
+
+```{r}
+df_total = data.frame()
+
+percents <- c(0.001,0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1)
+listofdfs <- list() 
+
+for ( i in 1:length(percents)){ 
+  output = RunCountry("RUS", year_vac=2023, agevac=12, cov=percents[i], vaceff_beforesexdebut =0.99, analyseCosts=TRUE)
+    df <- data.frame(output)
+    listofdfs[[i]] <- df # save your dataframes into the list
+  }
+
+```
+
+
+```{r}
+d<-as.data.frame(listofdfs)
+```
+
+```{r}
+ex_df.un <- d[!duplicated(as.list(d))]
+```
+
+```{r}
+library(tidyverse)
+
+final<- ex_df.un %>% 
+  rename(
+    close_to_zero = undiscounted,
+    ten = undiscounted.1,
+    twenty = undiscounted.2,
+    thirty = undiscounted.3,
+    forty = undiscounted.4,
+    fifty = undiscounted.5,
+    sixty = undiscounted.6,
+    seventy = undiscounted.7,
+    eighty = undiscounted.8,
+    ninty = undiscounted.9,
+    full = undiscounted.10
+    )
+
+```
+
+```{r}
+write_csv(final, "livessaved.csv")
+```
+
